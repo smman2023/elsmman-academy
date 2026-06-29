@@ -1,118 +1,266 @@
-// =============================
-// Google Sheets API
-// =============================
+//=========================================
+// Google Sheets
+//=========================================
 
 const API_URL = "https://script.google.com/macros/s/AKfycbxfO2j_rjDcv0lpsPiAoXeEDHogiF2OgrWUVFTNPrAQ22_zK1MMgRsFeWGea75SvvCR/exec";
 
 let students = [];
 
+
+//=========================================
 // عناصر الصفحة
+//=========================================
+
 const phoneInput = document.getElementById("phoneInput");
 const searchBtn = document.getElementById("searchBtn");
 
 const result = document.getElementById("result");
 const notFound = document.getElementById("notFound");
 
-// =============================
-// تحميل البيانات من Google Sheets
-// =============================
+const container = document.querySelector(".container");
+//=========================================
+// تحميل البيانات
+//=========================================
 
-async function loadStudents() {
+async function loadStudents(){
 
-    try {
+    try{
 
-        searchBtn.disabled = true;
-        searchBtn.innerHTML = "⏳ جارٍ تحميل البيانات...";
+        searchBtn.disabled=true;
 
-        const response = await fetch(API_URL);
+        searchBtn.innerHTML="جارى تحميل البيانات...";
 
-        students = await response.json();
+        const response=await fetch(API_URL);
 
-        console.log("عدد الطلاب:", students.length);
+        students=await response.json();
 
-        searchBtn.disabled = false;
-        searchBtn.innerHTML = `
-            <i class="fa-solid fa-magnifying-glass"></i>
-            استعلام
-        `;
+        console.log("Students:",students.length);
 
-    } catch (error) {
+        searchBtn.disabled=false;
 
-        console.error(error);
+        searchBtn.innerHTML="استعلام";
 
-        alert("تعذر تحميل بيانات الطلاب.\nتأكد من اتصال الإنترنت.");
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        alert("تعذر تحميل البيانات");
 
     }
 
 }
 
 loadStudents();
+//=========================================
+// Events
+//=========================================
 
-// =============================
-// البحث عند الضغط على الزر
-// =============================
+searchBtn.addEventListener("click",searchStudent);
 
-searchBtn.addEventListener("click", searchStudent);
+phoneInput.addEventListener("keypress",function(e){
 
-// البحث عند الضغط على Enter
-
-phoneInput.addEventListener("keypress", function (e) {
-
-    if (e.key === "Enter") {
+    if(e.key==="Enter"){
 
         searchStudent();
 
     }
 
 });
-
-// =============================
+//=========================================
 // تنظيف رقم الهاتف
-// =============================
+//=========================================
 
-function cleanPhone(phone) {
+function cleanPhone(phone){
 
     return String(phone)
-        .replace(/[^\d]/g, "")
-        .replace(/^0+/, "");
+
+    .replace(/[^\d]/g,"")
+
+    .replace(/^0+/,"");
 
 }
+//=========================================
+// عرض بيانات الطالب
+//=========================================
 
-// =============================
-// البحث
-// =============================
+function displayStudent(student){
 
-function searchStudent() {
+    result.classList.remove("hidden");
+    notFound.classList.add("hidden");
+
+    let list=document.getElementById("studentList");
+
+    if(list){
+
+        list.remove();
+
+    }
+
+    document.getElementById("studentCode").textContent=student.code;
+    document.getElementById("studentName").textContent=student.name;
+    document.getElementById("studentGrade").textContent=student.grade;
+    document.getElementById("studentGroup").textContent=student.group;
+    document.getElementById("studentStart").textContent=student.start;
+    document.getElementById("studentTime").textContent=student.time;
+    document.getElementById("studentWhatsapp").textContent=student.studentWhatsapp;
+    document.getElementById("parentWhatsapp").textContent=student.parentWhatsapp;
+
+}
+//=========================================
+// فتح بيانات الطالب
+//=========================================
+
+function displayStudentByCode(code){
+
+    const student=students.find(s=>String(s.code)===String(code));
+
+    if(student){
+
+        displayStudent(student);
+
+    }
+
+}
+//=========================================
+// عرض قائمة الطلاب
+//=========================================
+
+function showStudentList(list){
+
+    result.classList.add("hidden");
+    notFound.classList.add("hidden");
+
+    let old=document.getElementById("studentList");
+
+    if(old){
+
+        old.remove();
+
+    }
+
+    let html=`
+
+    <div id="studentList" class="student-list">
+
+        <div class="student-header">
+
+            <div class="student-header-icon">
+
+                <i class="fa-solid fa-users"></i>
+
+            </div>
+
+            <h2>
+
+                تم العثور على ${list.length} طالب
+
+            </h2>
+
+            <p>
+
+                اختر الطالب المطلوب
+
+            </p>
+
+        </div>
+
+    `;
+
+    list.forEach(student=>{
+
+        html+=`
+
+        <div class="student-card-new">
+
+            <div class="student-name">
+
+                ${student.name}
+
+            </div>
+
+            <button
+
+                class="student-open-btn"
+
+                onclick="displayStudentByCode('${student.code}')">
+
+                عرض البيانات
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+    html+=`</div>`;
+
+    container.insertAdjacentHTML("beforeend",html);
+
+}
+//=========================================
+// البحث عن الطالب
+//=========================================
+
+function searchStudent(){
 
     const phone = cleanPhone(phoneInput.value);
 
-    const student = students.find(s =>
+    // التحقق من إدخال رقم
+    if(phone===""){
 
-        cleanPhone(s.studentWhatsapp) === phone ||
+        alert("برجاء إدخال رقم الواتساب");
 
-        cleanPhone(s.parentWhatsapp) === phone
+        phoneInput.focus();
+
+        return;
+
+    }
+
+    // حذف القائمة القديمة
+    let old=document.getElementById("studentList");
+
+    if(old){
+
+        old.remove();
+
+    }
+
+    // إخفاء النتائج السابقة
+    result.classList.add("hidden");
+    notFound.classList.add("hidden");
+
+    // البحث عن جميع الطلاب
+    const matchedStudents = students.filter(student =>
+
+        cleanPhone(student.studentWhatsapp)===phone ||
+
+        cleanPhone(student.parentWhatsapp)===phone
 
     );
 
-    if (student) {
+    // لا يوجد طالب
+    if(matchedStudents.length===0){
 
-        result.classList.remove("hidden");
-        notFound.classList.add("hidden");
-
-        document.getElementById("studentCode").textContent = student.code;
-        document.getElementById("studentName").textContent = student.name;
-        document.getElementById("studentGrade").textContent = student.grade;
-        document.getElementById("studentGroup").textContent = student.group;
-        document.getElementById("studentStart").textContent = student.start;
-        document.getElementById("studentTime").textContent = student.time;
-        document.getElementById("studentWhatsapp").textContent = student.studentWhatsapp;
-        document.getElementById("parentWhatsapp").textContent = student.parentWhatsapp;
-
-    } else {
-
-        result.classList.add("hidden");
         notFound.classList.remove("hidden");
 
+        return;
+
     }
+
+    // طالب واحد
+    if(matchedStudents.length===1){
+
+        displayStudent(matchedStudents[0]);
+
+        return;
+
+    }
+
+    // أكثر من طالب
+    showStudentList(matchedStudents);
 
 }
