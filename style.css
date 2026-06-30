@@ -659,4 +659,42 @@ body{
 
 }
 
+}.facebook-btn{
+
+    display:block;
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:16px;
+
+    background:#1877f2;
+
+    color:#fff;
+
+    text-align:center;
+
+    border-radius:15px;
+
+    font-size:20px;
+
+    font-weight:bold;
+
+    transition:.3s;
+
+}
+
+.facebook-btn:hover{
+
+    background:#166fe5;
+
+    transform:translateY(-2px);
+
+}
+
+.facebook-btn i{
+
+    margin-left:10px;
+
 }
