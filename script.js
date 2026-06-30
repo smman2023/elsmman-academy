@@ -107,12 +107,106 @@ function displayStudent(student){
     document.getElementById("studentTime").textContent=student.time;
     document.getElementById("studentWhatsapp").textContent=student.studentWhatsapp;
     document.getElementById("parentWhatsapp").textContent=student.parentWhatsapp;
+    //=========================================
+// عرض الطلاب الآخرين بنفس رقم الواتساب
+//=========================================
+
+showOtherStudents(student);
 
 }
 //=========================================
 // فتح بيانات الطالب
 //=========================================
+//=========================================
+// عرض الطلاب الآخرين
+//=========================================
 
+function showOtherStudents(currentStudent){
+
+    // حذف القائمة القديمة إن وجدت
+    let old=document.getElementById("otherStudents");
+
+    if(old){
+
+        old.remove();
+
+    }
+
+    // البحث عن الطلاب المرتبطين بنفس الرقم
+    const others=students.filter(student=>
+
+        (
+
+            cleanPhone(student.studentWhatsapp)===cleanPhone(currentStudent.studentWhatsapp)
+
+            ||
+
+            cleanPhone(student.parentWhatsapp)===cleanPhone(currentStudent.parentWhatsapp)
+
+        )
+
+        &&
+
+        String(student.code)!==String(currentStudent.code)
+
+    );
+
+    // إذا لم يوجد طلاب آخرون
+    if(others.length===0){
+
+        return;
+
+    }
+
+    let html=`
+
+    <div id="otherStudents" class="student-list">
+
+        <div class="student-header">
+
+            <h2>
+
+                👨‍👩‍👧‍👦 طلاب آخرون
+
+            </h2>
+
+        </div>
+
+    `;
+
+    others.forEach(student=>{
+
+        html+=`
+
+        <div class="student-card-new">
+
+            <div class="student-name">
+
+                ${student.name}
+
+            </div>
+
+            <button
+
+                class="student-open-btn"
+
+                onclick="displayStudentByCode('${student.code}')">
+
+                عرض البيانات
+
+            </button>
+
+        </div>
+
+        `;
+
+    });
+
+    html+=`</div>`;
+
+    result.insertAdjacentHTML("afterend",html);
+
+}
 function displayStudentByCode(code){
 
     const student=students.find(s=>String(s.code)===String(code));
