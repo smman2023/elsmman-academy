@@ -12,6 +12,7 @@ let students = [];
 //=========================================
 
 const phoneInput = document.getElementById("phoneInput");
+
 const searchBtn = document.getElementById("searchBtn");
 
 const result = document.getElementById("result");
@@ -245,22 +246,27 @@ function searchStudent(){
     // لا يوجد طالب
     if(matchedStudents.length===0){
 
-        notFound.classList.remove("hidden");
+    notFound.classList.remove("hidden");
 
-        return;
+    phoneInput.value = "";
 
-    }
+    return;
 
+}
     // طالب واحد
     if(matchedStudents.length===1){
 
-        displayStudent(matchedStudents[0]);
+    displayStudent(matchedStudents[0]);
 
-        return;
+    phoneInput.value = "";
 
-    }
+    return;
+
+}
 
     // أكثر من طالب
     showStudentList(matchedStudents);
+
+phoneInput.value = "";
 
 }
