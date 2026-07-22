@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>أكاديمية مستر السمان | بوابة الاستعلام</title>
+
+    <meta name="description" content="بوابة الاستعلام الإلكترونية لأكاديمية السمان">
+    <meta name="theme-color" content="#0d47a1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- الشعار -->
+    <img src="logo.png" class="logo" alt="أكاديمية مستر السمان">
+
+    <!-- العنوان -->
+    <h1 class="main-title">
+        أكاديمية مستر السمان
+    </h1>
+
+    <p class="sub-title">
+        بوابة الاستعلام الإلكترونية
+    </p>
+
+    <!-- الخط الذهبي -->
+    <div class="title-line"></div>
+
+    <!-- البانر -->
+    <div class="banner">
+        <img src="banner.png" alt="بانر أكاديمية السمان">
+    </div>
+
+    <!-- مربع البحث -->
+    <div class="search-box">
+
+        <input
+            type="tel"
+            id="phoneInput"
+            placeholder="رقم واتساب الطالب أو ولي الأمر"
+            autocomplete="off">
+
+        <button id="searchBtn" class="search-btn">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            استعلام
+        </button>
+
+    </div>
+
+    <!-- بيانات الطالب -->
+
+    <div id="result" class="result-card hidden">
+
+        <h2 class="result-title">
+            <i class="fa-solid fa-user-graduate"></i>
+            بيانات الطالب
+        </h2>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-solid fa-id-card"></i>
+                كود الطالب
+            </div>
+            <div id="studentCode" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-solid fa-user"></i>
+                اسم الطالب
+            </div>
+            <div id="studentName" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-solid fa-school"></i>
+                الصف الدراسي
+            </div>
+            <div id="studentGrade" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-solid fa-users"></i>
+                المجموعة
+            </div>
+            <div id="studentGroup" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-solid fa-calendar-days"></i>
+                موعد الحصة الأولى
+            </div>
+            <div id="studentStart" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-solid fa-clock"></i>
+                التوقيت
+            </div>
+            <div id="studentTime" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-brands fa-whatsapp"></i>
+                واتساب الطالب
+            </div>
+            <div id="studentWhatsapp" class="result-value"></div>
+        </div>
+
+        <div class="result-row">
+            <div class="result-label">
+                <i class="fa-brands fa-whatsapp"></i>
+                واتساب ولي الأمر
+            </div>
+            <div id="parentWhatsapp" class="result-value"></div>
+        </div>
+
+    </div>
+
+    <!-- لم يتم العثور -->
+
+    <div id="notFound" class="not-found hidden">
+
+        <i class="fa-solid fa-circle-xmark"></i>
+
+        لم يتم تأكيد حجزك   الرجاء التواصل مع المستر
+
+    </div>
+
+    <!-- الفوتر -->
+
+    <footer class="footer">
+
+        <div class="footer-content">
+
+            <h3>
+                <i class="fa-solid fa-graduation-cap"></i>
+                أكاديمية السمان
+            </h3>
+
+            <p>بوابة الاستعلام الإلكترونية</p>
+
+            <p>جميع الحقوق محفوظة © 2026</p>
+
+ <p>تم التصميم والتطوير بواسطة مستر السمان</p>
+<a href="https://www.facebook.com/profile.php?id=100093795507056&locale=ar_AR"
+   target="_blank"
+   class="facebook-btn">
+
+    <i class="fa-brands fa-facebook-f"></i>
+
+    صفحة الأكاديمية على فيسبوك
+
+</a>
+
+        </div>
+
+    </footer>
+
+</div>
+
+<script src="script.js"></script>
+
+
+</body>
+
+</html>
