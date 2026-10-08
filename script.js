@@ -1,198 +1,273 @@
-//=========================================
-// Google Sheets
-//=========================================
-
-const API_URL = "https://script.google.com/macros/s/AKfycbxfO2j_rjDcv0lpsPiAoXeEDHogiF2OgrWUVFTNPrAQ22_zK1MMgRsFeWGea75SvvCR/exec";
-
-let students = [];
-
-
-//=========================================
-// عناصر الصفحة
+﻿//=========================================
+// Google Apps Script API
 //=========================================
 
-const phoneInput = document.getElementById("phoneInput");
+const API =
+"https://script.google.com/macros/s/AKfycbxZWur4Vz_L6E56N9zYyV0fTLLRIDnGqUiv0UE1cs5XCccWawvCjMGD_ib16B1Qf7li/exec";
 
-const searchBtn = document.getElementById("searchBtn");
-
-const result = document.getElementById("result");
-const notFound = document.getElementById("notFound");
-
-const container = document.querySelector(".container");
 //=========================================
-// تحميل البيانات
+// Variables
 //=========================================
 
-async function loadStudents(){
+let currentStudent = null;
+let videos = [];
+let currentIndex = 0;
 
-    try{
+//=========================================
+// Elements
+//=========================================
 
-        searchBtn.disabled=true;
+const codeInput =
+document.getElementById("codeInput");
 
-        searchBtn.innerHTML="جارى تحميل البيانات...";
+const passwordInput =
+document.getElementById("passwordInput");
 
-        const response=await fetch(API_URL);
+const loginBtn =
+document.getElementById("loginBtn");
 
-        students=await response.json();
+const loginError =
+document.getElementById("loginError");
 
-        console.log("Students:",students.length);
+const studentCard =
+document.getElementById("studentCard");
 
-        searchBtn.disabled=false;
+const videosCard =
+document.getElementById("videosCard");
 
-        searchBtn.innerHTML="استعلام";
+const playerCard =
+document.getElementById("playerCard");
 
-    }
+const videosContainer =
+document.getElementById("videosContainer");
 
-    catch(error){
+const studentName =
+document.getElementById("studentName");
 
-        console.log(error);
+const studentGrade =
+document.getElementById("studentGrade");
 
-        alert("تعذر تحميل البيانات");
+const videoTitle =
+document.getElementById("videoTitle");
 
-    }
+const videoFrame =
+document.getElementById("videoFrame");
 
-}
+const logoutBtn =
+document.getElementById("logoutBtn");
 
-loadStudents();
+const backBtn =
+document.getElementById("backBtn");
+
+const nextBtn =
+document.getElementById("nextBtn");
+
+const prevBtn =
+document.getElementById("prevBtn");
 //=========================================
 // Events
 //=========================================
 
-searchBtn.addEventListener("click",searchStudent);
+loginBtn.addEventListener("click", login);
 
-phoneInput.addEventListener("keypress",function(e){
+logoutBtn.addEventListener("click", logout);
 
-    if(e.key==="Enter"){
+backBtn.addEventListener("click", backToVideos);
 
-        searchStudent();
+nextBtn.addEventListener("click", nextLesson);
+
+prevBtn.addEventListener("click", previousLesson);
+
+codeInput.addEventListener("keypress", function (e) {
+
+    if (e.key === "Enter") {
+
+        login();
 
     }
 
 });
-//=========================================
-// تنظيف رقم الهاتف
-//=========================================
 
-function cleanPhone(phone){
+passwordInput.addEventListener("keypress", function (e) {
 
-    return String(phone)
+    if (e.key === "Enter") {
 
-    .replace(/[^\d]/g,"")
-
-    .replace(/^0+/,"");
-
-}
-//=========================================
-// عرض بيانات الطالب
-//=========================================
-
-function displayStudent(student){
-
-    result.classList.remove("hidden");
-    notFound.classList.add("hidden");
-
-    let list=document.getElementById("studentList");
-
-    if(list){
-
-        list.remove();
+        login();
 
     }
 
-    document.getElementById("studentCode").textContent=student.code;
-    document.getElementById("studentName").textContent=student.name;
-    document.getElementById("studentGrade").textContent=student.grade;
-    document.getElementById("studentGroup").textContent=student.group;
-    document.getElementById("studentStart").textContent=student.start;
-    document.getElementById("studentTime").textContent=student.time;
-    document.getElementById("studentWhatsapp").textContent=student.studentWhatsapp;
-    document.getElementById("parentWhatsapp").textContent=student.parentWhatsapp;
+});
+
+
 //=========================================
-// عرض الطلاب الآخرين بنفس رقم الواتساب
+// تسجيل الدخول
 //=========================================
 
-showOtherStudents(student);
+async function login() {
 
-}
-//=========================================
-// فتح بيانات الطالب
-//=========================================
-//=========================================
-// عرض الطلاب الآخرين
-//=========================================
+    const code = codeInput.value.trim();
 
-function showOtherStudents(currentStudent){
+    const password = passwordInput.value.trim();
 
-    // حذف القائمة القديمة إن وجدت
-    let old=document.getElementById("otherStudents");
+    if (code === "" || password === "") {
 
-    if(old){
-
-        old.remove();
-
-    }
-
-    // البحث عن الطلاب المرتبطين بنفس الرقم
-    const others=students.filter(student=>
-
-        (
-
-            cleanPhone(student.studentWhatsapp)===cleanPhone(currentStudent.studentWhatsapp)
-
-            ||
-
-            cleanPhone(student.parentWhatsapp)===cleanPhone(currentStudent.parentWhatsapp)
-
-        )
-
-        &&
-
-        String(student.code)!==String(currentStudent.code)
-
-    );
-
-    // إذا لم يوجد طلاب آخرون
-    if(others.length===0){
+        alert("برجاء إدخال كود الطالب والرقم السرى");
 
         return;
 
     }
 
-    let html=`
+    loginBtn.disabled = true;
 
-    <div id="otherStudents" class="student-list">
+    loginBtn.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> جارى تسجيل الدخول...';
 
-        <div class="student-header">
+    loginError.classList.add("hidden");
 
-            <h2>
+    try {
 
-                👨‍👩‍👧‍👦 طلاب آخرون
+        const response = await fetch(
 
-            </h2>
+            API +
+            "?action=login" +
+            "&code=" + encodeURIComponent(code) +
+            "&password=" + encodeURIComponent(password)
 
-        </div>
+        );
 
-    `;
+        const student = await response.json();
 
-    others.forEach(student=>{
+        if (!student.success) {
 
-        html+=`
+            loginBtn.disabled = false;
 
-        <div class="student-card-new">
+            loginBtn.innerHTML =
+                '<i class="fa-solid fa-right-to-bracket"></i> دخول المنصة';
 
-            <div class="student-name">
+            loginError.classList.remove("hidden");
 
-                ${student.name}
+            return;
+
+        }
+
+        currentStudent = student;
+
+        studentName.textContent = student.name;
+
+        studentGrade.textContent = student.grade;
+
+        videos = student.videos || [];
+
+        codeInput.value = "";
+
+        passwordInput.value = "";
+
+        if (videos.length === 0) {
+
+            videosContainer.innerHTML =
+                "<h2 style='text-align:center'>لا توجد فيديوهات لهذا الصف</h2>";
+
+        } else {
+
+            displayVideos();
+
+        }
+
+        studentCard.classList.remove("hidden");
+
+        videosCard.classList.remove("hidden");
+
+        playerCard.classList.add("hidden");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("حدث خطأ أثناء الاتصال بالخادم");
+
+    }
+
+    loginBtn.disabled = false;
+
+    loginBtn.innerHTML =
+        '<i class="fa-solid fa-right-to-bracket"></i> دخول المنصة';
+
+}
+//=========================================
+// عرض الفيديوهات
+//=========================================
+
+function displayVideos(){
+
+    videos.sort(function(a,b){
+
+        return a.order-b.order;
+
+    });
+
+    let html="";
+
+    let currentUnit="";
+
+    videos.forEach(function(video,index){
+
+        if(currentUnit!==video.unit){
+
+            currentUnit=video.unit;
+
+            html+=`
+
+            <div class="video-unit">
+
+                <div class="video-unit-title">
+
+                    📚 ${video.unit}
+
+                </div>
 
             </div>
 
-            <button
+            `;
 
-                class="student-open-btn"
+        }
 
-                onclick="displayStudentByCode('${student.code}')">
+        html+=`
 
-                عرض البيانات
+        <div
+        class="video-card"
+        onclick="playVideo(${index})">
+
+            <div class="video-header">
+
+                <div>
+
+                    <div class="lesson-number">
+
+                        ${video.lesson}
+
+                    </div>
+
+                    <div class="lesson-name">
+
+                        ${video.title}
+
+                    </div>
+
+                </div>
+
+                <div class="video-icon">
+
+                    <i class="fa-solid fa-circle-play"></i>
+
+                </div>
+
+            </div>
+
+            <button class="watch-btn">
+
+                ▶ مشاهدة الفيديو
 
             </button>
 
@@ -202,165 +277,306 @@ function showOtherStudents(currentStudent){
 
     });
 
-    html+=`</div>`;
-
-    result.insertAdjacentHTML("afterend",html);
-
-}
-function displayStudentByCode(code){
-
-    const student=students.find(s=>String(s.code)===String(code));
-
-    if(student){
-
-        displayStudent(student);
-
-    }
+    videosContainer.innerHTML=html;
 
 }
 //=========================================
-// عرض قائمة الطلاب
+// تشغيل الفيديو
 //=========================================
 
-function showStudentList(list){
+function playVideo(index){
 
-    result.classList.add("hidden");
-    notFound.classList.add("hidden");
+    currentIndex=index;
 
-    let old=document.getElementById("studentList");
+    const video=videos[index];
 
-    if(old){
+    document.querySelectorAll(".video-card").forEach(function(card){
 
-        old.remove();
-
-    }
-
-    let html=`
-
-    <div id="studentList" class="student-list">
-
-        <div class="student-header">
-
-            <div class="student-header-icon">
-
-                <i class="fa-solid fa-users"></i>
-
-            </div>
-
-            <h2>
-
-                تم العثور على ${list.length} طالب
-
-            </h2>
-
-            <p>
-
-                اختر الطالب المطلوب
-
-            </p>
-
-        </div>
-
-    `;
-
-    list.forEach(student=>{
-
-        html+=`
-
-        <div class="student-card-new">
-
-            <div class="student-name">
-
-                ${student.name}
-
-            </div>
-
-            <button
-
-                class="student-open-btn"
-
-                onclick="displayStudentByCode('${student.code}')">
-
-                عرض البيانات
-
-            </button>
-
-        </div>
-
-        `;
+        card.classList.remove("active");
 
     });
 
-    html+=`</div>`;
+    document.querySelectorAll(".video-card")[index]
+    .classList.add("active");
 
-    container.insertAdjacentHTML("beforeend",html);
+    videoTitle.textContent=video.title;
+
+    videoFrame.src=video.video;
+
+    videosCard.classList.add("hidden");
+
+    playerCard.classList.remove("hidden");
+
+    updateButtons();
 
 }
+
+
+
 //=========================================
-// البحث عن الطالب
+// تحديث الأزرار
 //=========================================
 
-function searchStudent(){
+function updateButtons(){
 
-    const phone = cleanPhone(phoneInput.value);
+    prevBtn.disabled=currentIndex===0;
 
-    // التحقق من إدخال رقم
-    if(phone===""){
+    nextBtn.disabled=currentIndex===videos.length-1;
 
-        alert("برجاء إدخال رقم الواتساب");
+}
 
-        phoneInput.focus();
 
-        return;
+
+//=========================================
+// الدرس التالى
+//=========================================
+
+function nextLesson(){
+
+    if(currentIndex<videos.length-1){
+
+        playVideo(currentIndex+1);
 
     }
 
-    // حذف القائمة القديمة
-    let old=document.getElementById("studentList");
+}
 
-    if(old){
 
-        old.remove();
+
+//=========================================
+// الدرس السابق
+//=========================================
+
+function previousLesson(){
+
+    if(currentIndex>0){
+
+        playVideo(currentIndex-1);
 
     }
 
-    // إخفاء النتائج السابقة
-    result.classList.add("hidden");
-    notFound.classList.add("hidden");
-
-    // البحث عن جميع الطلاب
-    const matchedStudents = students.filter(student =>
-
-        cleanPhone(student.studentWhatsapp)===phone ||
-
-        cleanPhone(student.parentWhatsapp)===phone
-
-    );
-
-    // لا يوجد طالب
-    if(matchedStudents.length===0){
-
-    notFound.classList.remove("hidden");
-
-    phoneInput.value = "";
-
-    return;
-
 }
-    // طالب واحد
-    if(matchedStudents.length===1){
+//=========================================
+// الرجوع إلى قائمة الفيديوهات
+//=========================================
 
-    displayStudent(matchedStudents[0]);
+function backToVideos(){
 
-    phoneInput.value = "";
+    playerCard.classList.add("hidden");
 
-    return;
+    videosCard.classList.remove("hidden");
+
+    videoFrame.src="";
 
 }
 
-    // أكثر من طالب
-    showStudentList(matchedStudents);
 
-phoneInput.value = "";
+
+//=========================================
+// تسجيل الخروج
+//=========================================
+
+function logout(){
+
+    currentStudent=null;
+
+    videos=[];
+
+    currentIndex=0;
+
+    studentCard.classList.add("hidden");
+
+    videosCard.classList.add("hidden");
+
+    playerCard.classList.add("hidden");
+
+    loginError.classList.add("hidden");
+
+    videoFrame.src="";
+
+    videosContainer.innerHTML="";
+
+    codeInput.value="";
+
+    passwordInput.value="";
+
+    codeInput.focus();
 
 }
+
+
+
+//=========================================
+// البحث داخل الفيديوهات
+//=========================================
+
+function searchVideos(keyword){
+
+    keyword=keyword.trim().toLowerCase();
+
+    const cards=document.querySelectorAll(".video-card");
+
+    cards.forEach(function(card,index){
+
+        const text=(
+
+            videos[index].title+
+
+            videos[index].lesson+
+
+            videos[index].unit
+
+        ).toLowerCase();
+
+        if(text.includes(keyword)){
+
+            card.style.display="block";
+
+        }
+
+        else{
+
+            card.style.display="none";
+
+        }
+
+    });
+
+}
+
+
+
+//=========================================
+// تشغيل أول فيديو (اختيارى)
+//=========================================
+
+function openFirstVideo(){
+
+    if(videos.length>0){
+
+        playVideo(0);
+
+    }
+
+}
+//=========================================
+// إيقاف الفيديو عند مغادرة الصفحة
+//=========================================
+
+window.addEventListener("beforeunload", function () {
+
+    videoFrame.src = "";
+
+});
+
+
+
+//=========================================
+// رسالة التحميل
+//=========================================
+
+function showLoading(text){
+
+    videosContainer.innerHTML =
+
+    `
+    <div class="loading">
+
+        <i class="fa-solid fa-spinner fa-spin"></i>
+
+        <br><br>
+
+        ${text}
+
+    </div>
+    `;
+
+}
+
+
+
+//=========================================
+// رسالة عدم وجود فيديوهات
+//=========================================
+
+function showEmpty(){
+
+    videosContainer.innerHTML =
+
+    `
+    <div class="not-found">
+
+        <i class="fa-solid fa-video-slash"></i>
+
+        <h2>
+
+            لا توجد فيديوهات متاحة حالياً
+
+        </h2>
+
+    </div>
+    `;
+
+}
+
+
+
+//=========================================
+// الضغط المزدوج على البطاقة
+//=========================================
+
+document.addEventListener("dblclick", function(e){
+
+    const card = e.target.closest(".video-card");
+
+    if(card){
+
+        card.click();
+
+    }
+
+});
+
+
+
+//=========================================
+// زر ESC
+//=========================================
+
+document.addEventListener("keydown", function(e){
+
+    if(e.key==="Escape"){
+
+        if(!playerCard.classList.contains("hidden")){
+
+            backToVideos();
+
+        }
+
+    }
+
+});
+
+
+
+//=========================================
+// الأسهم للتنقل
+//=========================================
+
+document.addEventListener("keydown", function(e){
+
+    if(playerCard.classList.contains("hidden")) return;
+
+    if(e.key==="ArrowLeft"){
+
+        nextLesson();
+
+    }
+
+    if(e.key==="ArrowRight"){
+
+        previousLesson();
+
+    }
+
+});
