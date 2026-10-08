@@ -289,38 +289,45 @@ function displayVideos(){
 //=========================================
 
 function playVideo(index){
-
     currentIndex=index;
-
     const video=videos[index];
 
     document.querySelectorAll(".video-card").forEach(function(card){
-
         card.classList.remove("active");
-
     });
-
-    document.querySelectorAll(".video-card")[index]
-    .classList.add("active");
+    document.querySelectorAll(".video-card")[index].classList.add("active");
 
     videoTitle.textContent=video.title;
 
-    // إضافة معاملات التشغيل التلقائي وكتم الصوت للرابط تلقائياً
-    let videoUrl = video.video;
-    if (!videoUrl.includes("?")) {
-        videoUrl += "?autoplay=1&mute=1";
-    } else if (!videoUrl.includes("autoplay=1")) {
-        videoUrl += "&autoplay=1&mute=1";
+    // استخراج معرف الفيديو وتكوين رابط نظيف ومحدث
+    let videoId = "";
+    let rawUrl = video.video;
+    if (rawUrl.includes("embed/")) {
+        videoId = rawUrl.split("embed/")[1].split("?")[0];
+    } else if (rawUrl.includes("youtu.be/")) {
+        videoId = rawUrl.split("youtu.be/")[1].split("?")[0];
+    } else if (rawUrl.includes("v=")) {
+        videoId = rawUrl.split("v=")[1].split("&")[0];
     }
 
-    videoFrame.src = videoUrl;
+    // إعادة بناء الـ iframe بالكامل برمجياً لضمان تفاعل يوتيوب الفوري
+    const wrapper = document.querySelector(".video-wrapper");
+    wrapper.innerHTML = `
+        <iframe
+        id="videoFrame"
+        width="100%"
+        height="420"
+        src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen>
+        </iframe>
+    `;
 
     videosCard.classList.add("hidden");
-
     playerCard.classList.remove("hidden");
-
     updateButtons();
-
 }
 
 
