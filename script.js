@@ -284,6 +284,10 @@ function displayVideos(){
 // تشغيل الفيديو
 //=========================================
 
+//=========================================
+// تشغيل الفيديو
+//=========================================
+
 function playVideo(index){
 
     currentIndex=index;
@@ -301,7 +305,15 @@ function playVideo(index){
 
     videoTitle.textContent=video.title;
 
-    videoFrame.src=video.video;
+    // إضافة معاملات التشغيل التلقائي وكتم الصوت للرابط تلقائياً
+    let videoUrl = video.video;
+    if (!videoUrl.includes("?")) {
+        videoUrl += "?autoplay=1&mute=1";
+    } else if (!videoUrl.includes("autoplay=1")) {
+        videoUrl += "&autoplay=1&mute=1";
+    }
+
+    videoFrame.src = videoUrl;
 
     videosCard.classList.add("hidden");
 
