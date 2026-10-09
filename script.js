@@ -3,7 +3,7 @@
 //=========================================
 
 const API =
-"https://script.google.com/macros/s/AKfycbyUywyVfjYQcn7tj0gHOCL37vk5yyRs-Xz7Qy6TPv8n5tEpxo1Xr5l0DvWeKNC5nnDn/exec";
+"https://script.google.com/macros/s/AKfycbzwmx920XLYwG4Wx9ev93gPMwA43dLNifrCDkiMA5BwHeo3SdgsGlW_YqqzJ8cLFKSa/exec";
 
 //=========================================
 // Variables
@@ -200,25 +200,36 @@ async function login() {
 // عرض الفيديوهات مرتبة حسب الوحدات و order
 //=========================================
 
-function displayVideos() {
-    // 1. فرز الفيديوهات تصاعدياً بناءً على رقم الترتيب order
-    videos.sort(function(a, b) {
-        return a.order - b.order;
-    });
+//=========================================
+// عرض الفيديوهات مرتبة تصاعدياً حسب الوحدات والترتيب
+//=========================================
+//=========================================
+// عرض الفيديوهات مرتبة تصاعدياً حسب الوحدات والترتيب
+//=========================================
 
-    // 2. تجميع الفيديوهات بحسب الوحدة (unit) لضمان ظهور كل وحدة بشكل مستقل
-    const groupedUnits = {};
-    videos.forEach(function(video) {
-        if (!groupedUnits[video.unit]) {
-            groupedUnits[video.unit] = [];
-        }
-        groupedUnits[video.unit].push(video);
+function displayVideos(){
+
+    // 1. فرز المصفوفة بالكامل أساساً حسب order تصاعدياً
+    videos.sort(function(a, b) {
+        return Number(a.order) - Number(b.order);
     });
 
     let html = "";
+    let currentUnit = "";
 
-    // 3. بناء واجهة الدروس مرتبة داخل كل وحدة
-    for (const unitName in groupedUnits) {
+    // 2. تتبع الوحدات المعروضة لضمان عدم تكرارها وعرض الدروس تحت كل وحدة بانتظام
+    // سنقوم بإنشاء خريطة (مجموعات) للوحدات
+    const unitsMap = {};
+    
+    videos.forEach(function(video) {
+        if (!unitsMap[video.unit]) {
+            unitsMap[video.unit] = [];
+        }
+        unitsMap[video.unit].push(video);
+    });
+
+    // 3. المرور على كل وحدة وعرض دروسها المرتبة
+    for (const unitName in unitsMap) {
         html += `
         <div class="video-unit">
             <div class="video-unit-title">
@@ -227,28 +238,47 @@ function displayVideos() {
         </div>
         `;
 
-        groupedUnits[unitName].forEach(function(video) {
-            // البحث عن المعرف الأصلي للفيديو داخل المصفوفة الكلية لتشغيله بنجاح
+        unitsMap[unitName].forEach(function(video) {
+            // ايجاد الفهرس الحقيقي (Index) للفيديو في المصفوفة الأصلية لضمان التشغيل السليم
             const originalIndex = videos.findIndex(v => v === video);
 
             html += `
-            <div class="video-card" onclick="playVideo(${originalIndex})">
+            <div
+            class="video-card"
+            onclick="playVideo(${originalIndex})">
+
                 <div class="video-header">
+
                     <div>
+
                         <div class="lesson-number">
+
                             ${video.lesson}
+
                         </div>
+
                         <div class="lesson-name">
+
                             ${video.title}
+
                         </div>
+
                     </div>
+
                     <div class="video-icon">
+
                         <i class="fa-solid fa-circle-play"></i>
+
                     </div>
+
                 </div>
+
                 <button class="watch-btn">
+
                     ▶ مشاهدة الفيديو
+
                 </button>
+
             </div>
             `;
         });
