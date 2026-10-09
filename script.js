@@ -3,7 +3,7 @@
 //=========================================
 
 const API =
-"https://script.google.com/macros/s/AKfycbxZWur4Vz_L6E56N9zYyV0fTLLRIDnGqUiv0UE1cs5XCccWawvCjMGD_ib16B1Qf7li/exec";
+"https://script.google.com/macros/s/AKfycbyUywyVfjYQcn7tj0gHOCL37vk5yyRs-Xz7Qy6TPv8n5tEpxo1Xr5l0DvWeKNC5nnDn/exec";
 
 //=========================================
 // Variables
@@ -196,89 +196,65 @@ async function login() {
 
 }
 //=========================================
-// عرض الفيديوهات
+//=========================================
+// عرض الفيديوهات مرتبة حسب الوحدات و order
 //=========================================
 
-function displayVideos(){
-
-    videos.sort(function(a,b){
-
-        return a.order-b.order;
-
+function displayVideos() {
+    // 1. فرز الفيديوهات تصاعدياً بناءً على رقم الترتيب order
+    videos.sort(function(a, b) {
+        return a.order - b.order;
     });
 
-    let html="";
-
-    let currentUnit="";
-
-    videos.forEach(function(video,index){
-
-        if(currentUnit!==video.unit){
-
-            currentUnit=video.unit;
-
-            html+=`
-
-            <div class="video-unit">
-
-                <div class="video-unit-title">
-
-                    📚 ${video.unit}
-
-                </div>
-
-            </div>
-
-            `;
-
+    // 2. تجميع الفيديوهات بحسب الوحدة (unit) لضمان ظهور كل وحدة بشكل مستقل
+    const groupedUnits = {};
+    videos.forEach(function(video) {
+        if (!groupedUnits[video.unit]) {
+            groupedUnits[video.unit] = [];
         }
+        groupedUnits[video.unit].push(video);
+    });
 
-        html+=`
+    let html = "";
 
-        <div
-        class="video-card"
-        onclick="playVideo(${index})">
-
-            <div class="video-header">
-
-                <div>
-
-                    <div class="lesson-number">
-
-                        ${video.lesson}
-
-                    </div>
-
-                    <div class="lesson-name">
-
-                        ${video.title}
-
-                    </div>
-
-                </div>
-
-                <div class="video-icon">
-
-                    <i class="fa-solid fa-circle-play"></i>
-
-                </div>
-
+    // 3. بناء واجهة الدروس مرتبة داخل كل وحدة
+    for (const unitName in groupedUnits) {
+        html += `
+        <div class="video-unit">
+            <div class="video-unit-title">
+                📚 ${unitName}
             </div>
-
-            <button class="watch-btn">
-
-                ▶ مشاهدة الفيديو
-
-            </button>
-
         </div>
-
         `;
 
-    });
+        groupedUnits[unitName].forEach(function(video) {
+            // البحث عن المعرف الأصلي للفيديو داخل المصفوفة الكلية لتشغيله بنجاح
+            const originalIndex = videos.findIndex(v => v === video);
 
-    videosContainer.innerHTML=html;
+            html += `
+            <div class="video-card" onclick="playVideo(${originalIndex})">
+                <div class="video-header">
+                    <div>
+                        <div class="lesson-number">
+                            ${video.lesson}
+                        </div>
+                        <div class="lesson-name">
+                            ${video.title}
+                        </div>
+                    </div>
+                    <div class="video-icon">
+                        <i class="fa-solid fa-circle-play"></i>
+                    </div>
+                </div>
+                <button class="watch-btn">
+                    ▶ مشاهدة الفيديو
+                </button>
+            </div>
+            `;
+        });
+    }
 
+    videosContainer.innerHTML = html;
 }
 //=========================================
 // تشغيل الفيديو
