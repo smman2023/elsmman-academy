@@ -100,17 +100,18 @@ passwordInput.addEventListener("keypress", function (e) {
 
 
 //=========================================
-// تسجيل الدخول
+//=========================================
+// تسجيل الدخول (المحدث ليطابق النسخة الصارمة)
 //=========================================
 
 async function login() {
 
     const code = codeInput.value.trim();
-    const phoneInput = passwordInput.value.trim(); // سنستعمل متغير المدخلات للواتساب
+    const phoneInput = passwordInput.value.trim(); // حقل رقم الواتساب
 
     if (code === "" || phoneInput === "") {
 
-        alert("برجاء إدخال كود الطالب ورقم واتساب الطالب أو ولي الأمر");
+        alert("برجاء إدخال كود الطالب ورقم الواتساب");
 
         return;
 
@@ -128,26 +129,79 @@ async function login() {
         const response = await fetch(
 
             API +
-            "?action=login" +
-            "&code=" + encodeURIComponent(code) +
-            "&phone=" + encodeURIComponent(phoneInput) // إرسال رقم الهاتف بدلاً من الرقم السري
+            "?code=" + encodeURIComponent(code) +
+            "&phone=" + encodeURIComponent(phoneInput)
 
         );
 
-        const student = await response.json();
+        const data = await response.json();
 
-        if (!student.success) {
+        // إذا فشل تسجيل الدخول أو جاء خطأ من السيرفر
+        if (!data.success) {
 
             loginBtn.disabled = false;
 
             loginBtn.innerHTML =
                 '<i class="fa-solid fa-right-to-bracket"></i> دخول المنصة';
 
+            // عرض رسالة الخطأ القادمة من السيرفر إن وجدت، أو الرسالة الافتراضية
+            const errorMsgHeading = loginError.querySelector("h2");
+            if (errorMsgHeading && data.message) {
+                errorMsgHeading.textContent = data.message;
+            }
+
             loginError.classList.remove("hidden");
 
             return;
 
         }
+
+        // إذا نجح تسجيل الدخول، البيانات ستأتي في متغير data مباشرة
+        currentStudent = data;
+
+        studentName.textContent = data.name;
+
+        studentGrade.textContent = data.grade;
+
+        videos = data.videos || [];
+
+        codeInput.value = "";
+
+        passwordInput.value = "";
+
+        if (videos.length === 0) {
+
+            videosContainer.innerHTML =
+                "<h2 style='text-align:center'>لا توجد فيديوهات لهذا الصف</h2>";
+
+        } else {
+
+            displayVideos();
+
+        }
+
+        studentCard.classList.remove("hidden");
+
+        videosCard.classList.remove("hidden");
+
+        playerCard.classList.add("hidden");
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert("حدث خطأ أثناء الاتصال بالخادم");
+
+    }
+
+    loginBtn.disabled = false;
+
+    loginBtn.innerHTML =
+        '<i class="fa-solid fa-right-to-bracket"></i> دخول المنصة';
+
+}
 
         currentStudent = student;
 
