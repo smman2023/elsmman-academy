@@ -69,6 +69,7 @@ alt="Banner">
 </div>
 
 <!--=========================
+<!--=========================
         Login
 ==========================-->
 
@@ -81,9 +82,9 @@ placeholder="كود الطالب"
 autocomplete="off">
 
 <input
-type="password"
+type="tel"
 id="passwordInput"
-placeholder="الرقم السرى"
+placeholder="رقم واتساب الطالب أو ولي الأمر"
 autocomplete="off">
 
 <button
@@ -95,6 +96,22 @@ class="search-btn">
 دخول المنصة
 
 </button>
+
+</div>
+
+<div id="loginError" class="result-card hidden">
+
+    <div class="not-found">
+
+        <i class="fa-solid fa-circle-xmark"></i>
+
+        <h2>
+
+            كود الطالب أو رقم الواتساب غير صحيح
+
+        </h2>
+
+    </div>
 
 </div>
 

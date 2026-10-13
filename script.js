@@ -3,7 +3,7 @@
 //=========================================
 
 const API =
-"https://script.google.com/macros/s/AKfycbz29A3DJIBlWRJ5Z7ZRYm0CvY7eRyCGQ9EXFVqJwWBLOsNuGObJePXZFNeE3zgqgxiH/exec";
+"https://script.google.com/macros/s/AKfycbyhyrY8dmE7lf3zSCEGoq6Z83T4rA9nSzkoTNWIsbh3zlsZuq4AP2J1Ncc6iilY_zNr/exec";
 
 //=========================================
 // Variables
@@ -106,12 +106,11 @@ passwordInput.addEventListener("keypress", function (e) {
 async function login() {
 
     const code = codeInput.value.trim();
+    const phoneInput = passwordInput.value.trim(); // سنستعمل متغير المدخلات للواتساب
 
-    const password = passwordInput.value.trim();
+    if (code === "" || phoneInput === "") {
 
-    if (code === "" || password === "") {
-
-        alert("برجاء إدخال كود الطالب والرقم السرى");
+        alert("برجاء إدخال كود الطالب ورقم واتساب الطالب أو ولي الأمر");
 
         return;
 
@@ -131,7 +130,7 @@ async function login() {
             API +
             "?action=login" +
             "&code=" + encodeURIComponent(code) +
-            "&password=" + encodeURIComponent(password)
+            "&phone=" + encodeURIComponent(phoneInput) // إرسال رقم الهاتف بدلاً من الرقم السري
 
         );
 
