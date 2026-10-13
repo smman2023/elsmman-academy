@@ -180,7 +180,8 @@ function displayVideos() {
 }
 
 //=========================================
-// تشغيل الفيديو
+//=========================================
+// تشغيل الفيديو بشكل آمن ومقيد
 //=========================================
 
 function playVideo(index) {
@@ -213,11 +214,11 @@ function playVideo(index) {
         id="videoFrame"
         width="100%"
         height="420"
-        src="https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1"
+        src="https://www.youtube.com/embed/${videoId}?autoplay=1&controls=1&disablekb=1&modestbranding=1&rel=0&enablejsapi=1"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
-        referrerpolicy="no-referrer-when-downgrade"
-        allowfullscreen>
+        allowfullscreen
+        referrerpolicy="strict-origin-when-cross-origin">
         </iframe>
     `;
 
@@ -275,4 +276,10 @@ function logout() {
 window.addEventListener("beforeunload", function () {
     const frame = document.getElementById("videoFrame");
     if (frame) frame.src = "";
+});
+// منع النقر بزر الماوس الأيمن داخل مشغل الفيديوهات لمنع نسخ الرابط
+document.addEventListener("contextmenu", function (e) {
+    if (e.target.closest(".video-wrapper")) {
+        e.preventDefault();
+    }
 });
