@@ -767,3 +767,24 @@ body{
     color:#2e7d32;
 
 }
+/* ÍÇæíÉ ãÔÛá ÇáİíÏíæ ãÚ ØÈŞÉ ÇáÍãÇíÉ áãäÚ ÇáäÓÎ æÇáãÔÇÑßÉ */
+.video-wrapper {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 18px;
+    margin: 25px 0;
+    background: #000;
+    box-shadow: 0 10px 25px rgba(0,0,0,.25);
+}
+
+/* ØÈŞÉ ÔİÇİÉ İæŞ ÇáİíÏíæ ÊãäÚ ÇáäŞÑ ÇáãÈÇÔÑ æŞÇÆãÉ íæÊíæÈ æÃÒÑÇÑ ÇáãÔÇÑßÉ */
+.video-protection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 60px); /* ÊÑß ãÓÇÍÉ ÈÓíØÉ áÔÑíØ ÇáÊÍßã ÈÇáÃÓİá Åä Ããßä */
+    z-index: 10;
+    background: transparent;
+}

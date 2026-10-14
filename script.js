@@ -181,9 +181,6 @@ function displayVideos() {
 
 //=========================================
 //=========================================
-// تشغيل الفيديو بشكل آمن ومقيد
-//=========================================
-
 function playVideo(index) {
     currentIndex = index;
     const video = videos[index];
@@ -209,7 +206,10 @@ function playVideo(index) {
     }
 
     const wrapper = document.querySelector(".video-wrapper");
+    
+    // وضع الـ iframe وتحته/فوقه طبقة الحماية الشفافة لمنع التفاعل المباشر ونسخ الروابط
     wrapper.innerHTML = `
+        <div class="video-protection-overlay" oncontextmenu="return false;"></div>
         <iframe
         id="videoFrame"
         width="100%"
@@ -226,6 +226,11 @@ function playVideo(index) {
     playerCard.classList.remove("hidden");
     updateButtons();
 }
+
+// منع قسري لأي محاولة كليك يمين في الصفحة بالكامل أو داخل المشغل
+document.addEventListener("contextmenu", function (e) {
+    e.preventDefault();
+});
 
 //=========================================
 // التنقل والتحكم بالأزرار
